@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import AuthContext from './auth-context';
 
-const CartProvider: React.FC = props => {
+const CartProvider = props => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = () => {

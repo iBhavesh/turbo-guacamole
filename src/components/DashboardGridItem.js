@@ -1,21 +1,16 @@
 import React from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
 
-type Props = {
-  title: string;
-  onPress: () => void;
-};
-
-const DashboardGridItem = (props: Props) => {
+const DashboardGridItem = ({onPress, title}) => {
   return (
     <View style={styles.gridItem}>
       <Pressable
         android_ripple={{color: '#918a8a'}}
         style={styles.touchableStyle}
-        onPress={props.onPress}>
+        onPress={onPress}>
         <View style={styles.gridView}>
           <Text style={styles.title} numberOfLines={2}>
-            {props.title}
+            {title}
           </Text>
         </View>
       </Pressable>

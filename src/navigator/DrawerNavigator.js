@@ -3,11 +3,8 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 
 import AccountScreen from '../screens/AccountScreen';
 import DashboardScreen from '../screens/DashboardScreen';
-
-export type DrawerParamList = {
-  DashboardScreen: undefined;
-  Account: undefined;
-};
+import colors from '../constants/colors';
+import {isIOS} from 'react-native-elements/dist/helpers';
 
 const Drawer = createDrawerNavigator();
 
@@ -17,6 +14,8 @@ const DrawerNavigator = () => {
       <Drawer.Screen
         options={{
           title: 'Dashboard',
+          headerTintColor: !isIOS ? colors.white : colors.primary,
+          headerStyle: !isIOS ? {backgroundColor: colors.primary} : {},
         }}
         name="DashboardScreen"
         component={DashboardScreen}

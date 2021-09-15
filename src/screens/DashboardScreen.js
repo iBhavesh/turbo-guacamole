@@ -1,11 +1,9 @@
-import {DrawerScreenProps} from '@react-navigation/drawer';
-import {CompositeScreenProps} from '@react-navigation/native';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React from 'react';
-import {FlatList, ListRenderItem} from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import {FlatList} from 'react-native';
+import {HeaderButtons, Item} from 'react-navigation-header-buttons';
+
 import DashboardGridItem from '../components/DashboardGridItem';
-import {DrawerParamList} from '../navigator/DrawerNavigator';
-import {MainStackParamList} from '../navigator/MainNavigator';
+import AppHeaderButton from '../components/AppHeaderButtons';
 
 const items = [
   {id: 1, name: 'Food'},
@@ -24,16 +22,18 @@ const items = [
   {id: 14, name: 'Fruits'},
 ];
 
-type Props = CompositeScreenProps<
-  DrawerScreenProps<DrawerParamList, 'DashboardScreen'>,
-  NativeStackScreenProps<MainStackParamList>
->;
+const DashboardScreen = ({navigation}) => {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={AppHeaderButton}>
+          <Item title="Fav" iconName="dots-vertical" onPress={() => {}} />
+        </HeaderButtons>
+      ),
+    });
+  }, [navigation]);
 
-const DashboardScreen = ({navigation}: Props) => {
-  const renderitem: ListRenderItem<{
-    id: number;
-    name: string;
-  }> = ({item}) => {
+  const renderitem = ({item}) => {
     return (
       <DashboardGridItem
         title={item.name}
