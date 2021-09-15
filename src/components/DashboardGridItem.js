@@ -2,8 +2,9 @@ import React from 'react';
 import {View, StyleSheet, Pressable, Text} from 'react-native';
 
 const DashboardGridItem = ({onPress, title}) => {
+  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return (
-    <View style={styles.gridItem}>
+    <View style={[styles.gridItem, {backgroundColor: '#' + randomColor}]}>
       <Pressable
         android_ripple={{color: '#918a8a'}}
         style={styles.touchableStyle}

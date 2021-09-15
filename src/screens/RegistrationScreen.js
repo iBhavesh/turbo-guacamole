@@ -21,7 +21,7 @@ const RegistrationScreen = ({navigation}) => {
         title="Welcome"
         subtitle="Create an account to continue"
       />
-      <KeyboardAvoidingView style={{flex: 1}}>
+      <KeyboardAvoidingView behavior="padding" style={{flex: 1}}>
         <ScrollView style={{flex: 1}}>
           <View style={styles.body}>
             <View>
