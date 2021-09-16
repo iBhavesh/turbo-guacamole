@@ -86,7 +86,7 @@ const DrawerNavigator = () => {
       />
       <Drawer.Screen
         options={{
-          drawerIcon: () => <Icon type="ionicon" name="ios-person" />,
+          drawerIcon: color => <Icon type="ionicon" name="ios-person" />,
         }}
         name="Account"
         component={AccountScreen}
