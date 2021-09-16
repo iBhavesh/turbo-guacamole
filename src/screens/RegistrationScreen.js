@@ -218,6 +218,7 @@ const Form = () => {
       <FormField
         placeholder="Full Name"
         label="Full Name"
+        returnKeyType="next"
         leftIcon={{type: 'ionicon', name: 'ios-person'}}
         onChangeText={fullNameChangeHandler}
         onBlur={fullNameBlurHandler}
@@ -227,6 +228,7 @@ const Form = () => {
       <FormField
         placeholder="Email"
         label="Email"
+        returnKeyType="next"
         leftIcon={{type: 'ionicon', name: 'mail'}}
         onChangeText={emailChangeHandler}
         onBlur={emailBlurHandler}

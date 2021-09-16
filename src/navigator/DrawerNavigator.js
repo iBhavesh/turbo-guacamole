@@ -2,7 +2,6 @@ import React from 'react';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
-  DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
 
@@ -10,7 +9,7 @@ import AccountScreen from '../screens/AccountScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import colors from '../constants/colors';
 import {isIOS} from 'react-native-elements/dist/helpers';
-import {Image, Linking, SafeAreaView, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
 
 const Drawer = createDrawerNavigator();
@@ -18,33 +17,19 @@ const Drawer = createDrawerNavigator();
 const CustomDrawerContent = props => {
   return (
     <DrawerContentScrollView
-      style={{flex: 1}}
-      contentContainerStyle={{flex: 1, justifyContent: 'space-between'}}
+      // style={{flex: 1}}
+      contentContainerStyle={styles.drawerContentContainer}
       {...props}>
       <View>
-        <View
-          style={{
-            backgroundColor: colors.secondary,
-            alignItems: 'center',
-            justifyContent: 'space-evenly',
-            height: 200,
-          }}>
+        <View style={styles.headerContainer}>
+          <Image
+            style={styles.headerImage}
+            source={{
+              uri: 'https://miro.medium.com/max/1400/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg',
+            }}
+          />
           <View>
-            <Image
-              style={{
-                width: 100,
-                height: 100,
-                borderRadius: 50,
-                borderColor: 'white',
-                borderWidth: 1,
-              }}
-              source={{
-                uri: 'https://miro.medium.com/max/1400/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg',
-              }}
-            />
-          </View>
-          <View>
-            <Text style={{fontSize: 18, color: 'white'}}>Bhavesh Shama</Text>
+            <Text style={styles.headerTitle}>Bhavesh Shama</Text>
           </View>
         </View>
         <DrawerItemList {...props} />
@@ -53,22 +38,10 @@ const CustomDrawerContent = props => {
         icon={{type: 'ionicon', name: 'ios-exit'}}
         iconPosition="left"
         title="Logout"
-        containerStyle={{padding: 10}}
+        containerStyle={styles.buttonContainer}
       />
     </DrawerContentScrollView>
   );
-
-  // return (
-  //   <View style={{flex: 1}}>
-  //     <View>
-  //       <Image
-  //         source={{
-  //           uri: 'https://miro.medium.com/max/1400/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg',
-  //         }}
-  //       />
-  //     </View>
-  //   </View>
-  // );
 };
 
 const DrawerNavigator = () => {
@@ -79,14 +52,18 @@ const DrawerNavigator = () => {
           title: 'Dashboard',
           headerTintColor: !isIOS ? colors.white : colors.primary,
           headerStyle: !isIOS ? {backgroundColor: colors.primary} : {},
-          drawerIcon: () => <Icon type="ionicon" name="ios-grid" />,
+          drawerIcon: ({color}) => (
+            <Icon color={color} type="ionicon" name="ios-grid" />
+          ),
         }}
         name="DashboardScreen"
         component={DashboardScreen}
       />
       <Drawer.Screen
         options={{
-          drawerIcon: color => <Icon type="ionicon" name="ios-person" />,
+          drawerIcon: ({color}) => (
+            <Icon color={color} type="ionicon" name="ios-person" />
+          ),
         }}
         name="Account"
         component={AccountScreen}
@@ -94,5 +71,33 @@ const DrawerNavigator = () => {
     </Drawer.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    padding: 10,
+    borderWidth: 1,
+  },
+  drawerContentContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  headerContainer: {
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    height: 200,
+  },
+  headerImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderColor: 'white',
+    borderWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 18,
+    color: 'white',
+  },
+});
 
 export default DrawerNavigator;

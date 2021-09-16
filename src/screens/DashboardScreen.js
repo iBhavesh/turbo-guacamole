@@ -1,9 +1,11 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useLayoutEffect, useState} from 'react';
 import {FlatList} from 'react-native';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 
 import DashboardGridItem from '../components/DashboardGridItem';
 import AppHeaderButton from '../components/AppHeaderButtons';
+import {SearchBar} from 'react-native-elements';
+import colors from '../constants/colors';
 
 const items = [
   {id: 1, name: 'Food'},
@@ -23,11 +25,29 @@ const items = [
 ];
 
 const DashboardScreen = ({navigation}) => {
+  const [showSearchBar, setshowSearchBar] = useState(false);
+  const [listItems, setListItems] = useState(items);
+  const [searchData, setSearchData] = useState('');
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={AppHeaderButton}>
-          <Item title="Fav" iconName="dots-vertical" onPress={() => {}} />
+          <Item
+            iconName="ios-search"
+            onPress={() => {
+              navigation.setOptions({
+                headerShown: false,
+              });
+              setshowSearchBar(true);
+            }}
+          />
+
+          <Item
+            title="Fav"
+            iconName="ios-ellipsis-vertical"
+            onPress={() => {}}
+          />
         </HeaderButtons>
       ),
     });
@@ -45,12 +65,33 @@ const DashboardScreen = ({navigation}) => {
   };
 
   return (
-    <FlatList
-      scrollEnabled
-      numColumns={2}
-      data={items}
-      renderItem={renderitem}
-    />
+    <>
+      {showSearchBar && (
+        <SearchBar
+          autoFocus
+          containerStyle={{backgroundColor: colors.primary}}
+          inputContainerStyle={{backgroundColor: colors.white}}
+          onChangeText={value => {
+            setSearchData(value);
+            const newItems = items.filter(item => item.name.includes(value));
+            setListItems(newItems);
+          }}
+          value={searchData}
+          onEndEditing={() => {
+            setshowSearchBar(false);
+            navigation.setOptions({
+              headerShown: true,
+            });
+          }}
+        />
+      )}
+      <FlatList
+        scrollEnabled
+        numColumns={2}
+        data={listItems}
+        renderItem={renderitem}
+      />
+    </>
   );
 };
 
