@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useReducer} from 'react';
+import React, {useReducer} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,16 +9,16 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import {Button} from 'react-native-elements';
+import {useDispatch, useSelector} from 'react-redux';
 import FormField from '../components/FormField';
 
 import RegisterHeader from '../components/RegisterHeader';
 import colors from '../constants/colors';
-
-import AuthContext from '../store/auth-context';
+import {signin} from '../store/reducers/authReducer';
 
 const SigninScreen = ({navigation}) => {
   const goToRegister = () => {
-    navigation.goBack();
+    navigation.navigate('Register');
   };
 
   return (
@@ -98,13 +98,13 @@ const initialState = {
     isTouched: false,
     isValid: false,
     error: 'Phone No. is required',
-    value: '',
+    value: '9836222684',
   },
   password: {
     isTouched: false,
     isValid: false,
     error: 'Password is Requried',
-    value: '',
+    value: '123456',
   },
 };
 
@@ -194,17 +194,20 @@ const Form = () => {
 
   const isValid = state.phone.isValid && state.password.isValid;
 
-  const authCtx = useContext(AuthContext);
+  const reduxDispatch = useDispatch();
+  const reduxState = useSelector(rxState => rxState);
 
   const submitHandler = async () => {
-    authCtx.signin(+state.phone.value, state.password.value);
+    reduxDispatch(
+      signin({phone: +state.phone.value, password: state.password.value}),
+    );
   };
 
   return (
     <>
       <FormField
         placeholder="phone"
-        label="phone"
+        label="Phone"
         returnKeyType="next"
         leftIcon={{type: 'ionicon', name: 'mail'}}
         onChangeText={phoneChangeHandler}
@@ -231,14 +234,14 @@ const Form = () => {
           onPress={() => {}}
         />
       </View>
-      {authCtx.error.length > 0 && (
+      {reduxState.error.length > 0 && (
         <View style={styles.errorContainer}>
-          <Text style={styles.errorStyle}>{authCtx.error}</Text>
+          <Text style={styles.errorStyle}>{reduxState.error}</Text>
         </View>
       )}
 
-      {authCtx.loading ? (
-        <ActivityIndicator />
+      {reduxState.isLoading ? (
+        <ActivityIndicator size="large" />
       ) : (
         <Button
           containerStyle={styles.buttonContainer}

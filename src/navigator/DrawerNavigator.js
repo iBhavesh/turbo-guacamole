@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -11,10 +11,17 @@ import colors from '../constants/colors';
 import {isIOS} from 'react-native-elements/dist/helpers';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
+import AuthContext from '../store/auth-context';
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = props => {
+  const authCtx = useContext(AuthContext);
+
+  const handleSignout = () => {
+    authCtx.signout();
+  };
+
   return (
     <DrawerContentScrollView
       // style={{flex: 1}}
@@ -39,6 +46,9 @@ const CustomDrawerContent = props => {
         iconPosition="left"
         title="Logout"
         containerStyle={styles.buttonContainer}
+        onPress={() => {
+          handleSignout();
+        }}
       />
     </DrawerContentScrollView>
   );
@@ -46,7 +56,8 @@ const CustomDrawerContent = props => {
 
 const DrawerNavigator = () => {
   return (
-    <Drawer.Navigator drawerContent={CustomDrawerContent}>
+    <Drawer.Navigator
+      drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen
         options={{
           title: 'Dashboard',

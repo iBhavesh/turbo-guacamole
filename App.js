@@ -1,20 +1,16 @@
 import 'react-native-gesture-handler';
 
-import React, {useEffect} from 'react';
+import React from 'react';
 
-import AuthContextProvider from './src/store/AuthContextProvider';
 import Main from './src/Main';
-import SplashScreen from 'react-native-splash-screen';
+import {Provider} from 'react-redux';
+import store from './src/store/store';
 
 const App = () => {
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
-
   return (
-    <AuthContextProvider>
+    <Provider store={store}>
       <Main />
-    </AuthContextProvider>
+    </Provider>
   );
 };
 

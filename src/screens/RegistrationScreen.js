@@ -12,7 +12,7 @@ import {validateEmail} from '../helpers/helpers';
 
 const RegistrationScreen = ({navigation}) => {
   const goToLogin = () => {
-    navigation.push('Login');
+    navigation.goBack();
   };
 
   return (
@@ -257,7 +257,7 @@ const Form = () => {
         containerStyle={styles.buttonContainer}
         title="Register"
         buttonStyle={styles.buttonStyle}
-        onPress={authCtx.signin}
+        onPress={authCtx.register}
         disabled={!isValid}
       />
     </>
