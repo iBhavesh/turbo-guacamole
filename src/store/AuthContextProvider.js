@@ -3,18 +3,27 @@ import AuthContext from './auth-context';
 
 const CartProvider = props => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const login = () => {
-    setIsLoggedIn(true);
+  const singin = async (mobile, password) => {
+    setLoading(true);
+    setTimeout(() => {
+      // setIsLoggedIn(true);
+      setError('Error is there');
+      setLoading(false);
+    }, 2000);
   };
-  const logout = () => {
+  const signout = () => {
     setIsLoggedIn(false);
   };
 
   const authContextHelper = {
     isLoggedIn: isLoggedIn,
-    login: login,
-    logout: logout,
+    signin: singin,
+    signout: signout,
+    loading,
+    error,
   };
 
   return (

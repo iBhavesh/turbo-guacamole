@@ -257,7 +257,7 @@ const Form = () => {
         containerStyle={styles.buttonContainer}
         title="Register"
         buttonStyle={styles.buttonStyle}
-        onPress={authCtx.login}
+        onPress={authCtx.signin}
         disabled={!isValid}
       />
     </>

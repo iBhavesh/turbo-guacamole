@@ -4,7 +4,7 @@ import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 
 import DashboardGridItem from '../components/DashboardGridItem';
 import AppHeaderButton from '../components/AppHeaderButtons';
-import {SearchBar} from 'react-native-elements';
+import {SearchBar, Text} from 'react-native-elements';
 import colors from '../constants/colors';
 
 const items = [
@@ -69,6 +69,12 @@ const DashboardScreen = ({navigation}) => {
       {showSearchBar && (
         <SearchBar
           autoFocus
+          onClear={() => {
+            setshowSearchBar(false);
+            navigation.setOptions({
+              headerShown: true,
+            });
+          }}
           containerStyle={{backgroundColor: colors.primary}}
           inputContainerStyle={{backgroundColor: colors.white}}
           onChangeText={value => {
@@ -78,19 +84,25 @@ const DashboardScreen = ({navigation}) => {
           }}
           value={searchData}
           onEndEditing={() => {
-            setshowSearchBar(false);
-            navigation.setOptions({
-              headerShown: true,
-            });
+            if (!searchData) {
+              setshowSearchBar(false);
+              navigation.setOptions({
+                headerShown: true,
+              });
+            }
           }}
         />
       )}
-      <FlatList
-        scrollEnabled
-        numColumns={2}
-        data={listItems}
-        renderItem={renderitem}
-      />
+      {listItems.length === 0 ? (
+        <Text h2> No items found </Text>
+      ) : (
+        <FlatList
+          scrollEnabled
+          numColumns={2}
+          data={listItems}
+          renderItem={renderitem}
+        />
+      )}
     </>
   );
 };

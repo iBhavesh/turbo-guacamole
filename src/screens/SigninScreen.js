@@ -6,17 +6,17 @@ import {
   Text,
   KeyboardAvoidingView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import {Button} from 'react-native-elements';
 import FormField from '../components/FormField';
 
 import RegisterHeader from '../components/RegisterHeader';
 import colors from '../constants/colors';
-import {validateEmail} from '../helpers/helpers';
 
 import AuthContext from '../store/auth-context';
 
-const RegistrationScreen = ({navigation}) => {
+const SigninScreen = ({navigation}) => {
   const goToRegister = () => {
     navigation.goBack();
   };
@@ -68,9 +68,15 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    // alignItems: 'center',
     padding: 10,
     paddingTop: 0,
+  },
+  errorContainer: {
+    alignItems: 'center',
+  },
+  errorStyle: {
+    color: 'red',
+    fontSize: 18,
   },
   footerStyle: {
     flexDirection: 'row',
@@ -88,41 +94,53 @@ const styles = StyleSheet.create({
 });
 
 const initialState = {
-  email: {isTouched: false, isValid: false, error: 'Email is required'},
-  password: {isTouched: false, isValid: false, error: 'Password is Requried'},
+  phone: {
+    isTouched: false,
+    isValid: false,
+    error: 'Phone No. is required',
+    value: '',
+  },
+  password: {
+    isTouched: false,
+    isValid: false,
+    error: 'Password is Requried',
+    value: '',
+  },
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'email':
+    case 'phone':
       return {
-        email: {
-          ...state.email,
+        phone: {
+          ...state.phone,
           isValid: action.payload.isValid,
           error: action.payload.error,
+          value: action.payload.value,
         },
         password: state.password,
         fullName: state.fullName,
       };
     case 'password':
       return {
-        email: state.email,
+        phone: state.phone,
         password: {
           ...state.password,
           isValid: action.payload.isValid,
           error: action.payload.error,
+          value: action.payload.value,
         },
         fullName: state.fullName,
       };
-    case 'emailBlur':
+    case 'phoneBlur':
       return {
-        email: {...state.email, isTouched: true},
+        phone: {...state.phone, isTouched: true},
         password: {...state.password},
         fullName: {...state.fullName},
       };
     case 'passwordBlur':
       return {
-        email: {...state.email},
+        phone: {...state.phone},
         password: {...state.password, isTouched: true},
         fullName: {...state.fullName},
       };
@@ -134,18 +152,18 @@ const reducer = (state, action) => {
 const Form = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const emailChangeHandler = value => {
+  const phoneChangeHandler = value => {
     let isValid = true;
     let error = '';
     if (value.length === 0) {
       isValid = false;
-      error = 'Email is required';
+      error = 'phone is required';
     }
-    if (!validateEmail(value)) {
+    if (value.length < 10) {
       isValid = false;
-      error = 'Email is not valid';
+      error = 'phone is not valid';
     }
-    dispatch({type: 'email', payload: {value, isValid, error}});
+    dispatch({type: 'phone', payload: {value, isValid, error}});
   };
   const passwordChangeHandler = value => {
     let isValid = true;
@@ -161,11 +179,11 @@ const Form = () => {
     dispatch({type: 'password', payload: {value, isValid, error}});
   };
 
-  const emailBlurHandler = value => {
-    if (state.email.isTouched) {
+  const phoneBlurHandler = value => {
+    if (state.phone.isTouched) {
       return;
     }
-    dispatch({type: 'emailBlur'});
+    dispatch({type: 'phoneBlur'});
   };
   const passwordBlurHandler = value => {
     if (state.password.isTouched) {
@@ -174,21 +192,26 @@ const Form = () => {
     dispatch({type: 'passwordBlur'});
   };
 
-  const isValid = state.email.isValid && state.password.isValid;
+  const isValid = state.phone.isValid && state.password.isValid;
 
   const authCtx = useContext(AuthContext);
+
+  const submitHandler = async () => {
+    authCtx.signin(+state.phone.value, state.password.value);
+  };
 
   return (
     <>
       <FormField
-        placeholder="Email"
-        label="Email"
+        placeholder="phone"
+        label="phone"
         returnKeyType="next"
         leftIcon={{type: 'ionicon', name: 'mail'}}
-        onChangeText={emailChangeHandler}
-        onBlur={emailBlurHandler}
-        value={state.email.value}
-        errorMessage={state.email.isTouched ? state.email.error : ''}
+        onChangeText={phoneChangeHandler}
+        onBlur={phoneBlurHandler}
+        value={state.phone.value}
+        keyboardType="numeric"
+        errorMessage={state.phone.isTouched ? state.phone.error : ''}
       />
       <FormField
         placeholder="Password"
@@ -208,15 +231,25 @@ const Form = () => {
           onPress={() => {}}
         />
       </View>
-      <Button
-        containerStyle={styles.buttonContainer}
-        title="Sign in"
-        buttonStyle={styles.buttonStyle}
-        onPress={authCtx.login}
-        disabled={!isValid}
-      />
+      {authCtx.error.length > 0 && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorStyle}>{authCtx.error}</Text>
+        </View>
+      )}
+
+      {authCtx.loading ? (
+        <ActivityIndicator />
+      ) : (
+        <Button
+          containerStyle={styles.buttonContainer}
+          title="Sign in"
+          buttonStyle={styles.buttonStyle}
+          onPress={submitHandler}
+          disabled={!isValid}
+        />
+      )}
     </>
   );
 };
 
-export default RegistrationScreen;
+export default SigninScreen;

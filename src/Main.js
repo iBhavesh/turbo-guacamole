@@ -12,8 +12,7 @@ const Main = () => {
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NavigationContainer>
-        {/* {!isAuthenticated?.isLoggedIn ? <AuthNavigator /> : */}
-        <MainNavigator />
+        {!isAuthenticated?.isLoggedIn ? <AuthNavigator /> : <MainNavigator />}
       </NavigationContainer>
     </>
   );
