@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import {Button} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
-import FormField from '../components/FormField';
+import CountryPicker from 'react-native-country-picker-modal';
 
+import FormField from '../components/FormField';
 import RegisterHeader from '../components/RegisterHeader';
 import colors from '../constants/colors';
 import {signin} from '../store/reducers/authReducer';
@@ -94,15 +95,19 @@ const styles = StyleSheet.create({
 });
 
 const initialState = {
+  country: {
+    callingCode: ['91'],
+    countryCode: 'US',
+  },
   phone: {
     isTouched: false,
-    isValid: false,
+    isValid: true,
     error: 'Phone No. is required',
     value: '9836222684',
   },
   password: {
     isTouched: false,
-    isValid: false,
+    isValid: true,
     error: 'Password is Requried',
     value: '123456',
   },
@@ -119,7 +124,7 @@ const reducer = (state, action) => {
           value: action.payload.value,
         },
         password: state.password,
-        fullName: state.fullName,
+        country: state.country,
       };
     case 'password':
       return {
@@ -130,19 +135,28 @@ const reducer = (state, action) => {
           error: action.payload.error,
           value: action.payload.value,
         },
-        fullName: state.fullName,
+        country: state.country,
+      };
+    case 'country':
+      return {
+        phone: state.phone,
+        password: state.password,
+        country: {
+          countryCode: action.payload.cca2,
+          callingCode: action.payload.callingCode,
+        },
       };
     case 'phoneBlur':
       return {
         phone: {...state.phone, isTouched: true},
         password: {...state.password},
-        fullName: {...state.fullName},
+        country: {...state.country},
       };
     case 'passwordBlur':
       return {
         phone: {...state.phone},
         password: {...state.password, isTouched: true},
-        fullName: {...state.fullName},
+        country: {...state.country},
       };
     default:
       break;
@@ -199,7 +213,11 @@ const Form = () => {
 
   const submitHandler = async () => {
     reduxDispatch(
-      signin({phone: +state.phone.value, password: state.password.value}),
+      signin({
+        phone: +state.phone.value,
+        password: state.password.value,
+        callingCode: state.country.callingCode,
+      }),
     );
   };
 
@@ -209,7 +227,14 @@ const Form = () => {
         placeholder="phone"
         label="Phone"
         returnKeyType="next"
-        leftIcon={{type: 'ionicon', name: 'mail'}}
+        leftIcon={
+          <CountryPicker
+            withFilter
+            withAlphaFilter
+            countryCode={state.country.countryCode}
+            onSelect={country => dispatch({type: 'country', payload: country})}
+          />
+        }
         onChangeText={phoneChangeHandler}
         onBlur={phoneBlurHandler}
         value={state.phone.value}

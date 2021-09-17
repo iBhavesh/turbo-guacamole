@@ -15,7 +15,7 @@ export const signin = createAsyncThunk('authReducer/signin', async data => {
   try {
     const response = await axios.post(url, {
       phone: data.phone,
-      country_code: '+91',
+      country_code: '+' + data.callingCode[0],
       password: data.password,
       user_type: 'V',
       login_type: 'I',
@@ -30,6 +30,7 @@ export const signin = createAsyncThunk('authReducer/signin', async data => {
     await AsyncStorage.setItem('user', JSON.stringify(user));
     return user;
   } catch (e) {
+    console.log(e);
     throw 'Username/password invalid';
   }
 });
@@ -65,6 +66,10 @@ const authReducer = createSlice({
         state.isLoading = false;
         state.isLoggedIn = true;
         state.user = action.payload;
+      })
+      .addCase(signin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
       })
       .addCase(signout.fulfilled, (state, action) => {
         state.isLoggedIn = false;
