@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -11,16 +11,25 @@ import colors from '../constants/colors';
 import {isIOS} from 'react-native-elements/dist/helpers';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
-import AuthContext from '../store/auth-context';
+import {useDispatch, useSelector} from 'react-redux';
+import {signout} from '../store/reducers/authReducer';
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = props => {
-  const authCtx = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const user = useSelector(state => state.user);
 
   const handleSignout = () => {
-    authCtx.signout();
+    dispatch(signout());
   };
+
+  let image;
+  if (!user || !user.profile_picture) {
+    image = require('../assets/images/profile_placeholder.png');
+  } else {
+    image = {usri: user.profile_picture};
+  }
 
   return (
     <DrawerContentScrollView
@@ -29,14 +38,9 @@ const CustomDrawerContent = props => {
       {...props}>
       <View>
         <View style={styles.headerContainer}>
-          <Image
-            style={styles.headerImage}
-            source={{
-              uri: 'https://miro.medium.com/max/1400/1*mk1-6aYaf_Bes1E3Imhc0A.jpeg',
-            }}
-          />
+          <Image style={styles.headerImage} source={image} />
           <View>
-            <Text style={styles.headerTitle}>Bhavesh Shama</Text>
+            <Text style={styles.headerTitle}>{user.name}</Text>
           </View>
         </View>
         <DrawerItemList {...props} />

@@ -1,32 +1,48 @@
-import React, {useContext, useEffect} from 'react';
-import {StatusBar} from 'react-native';
+import React, {useEffect} from 'react';
+import {
+  ActivityIndicator,
+  ImageBackground,
+  StatusBar,
+  View,
+} from 'react-native';
 
 import MainNavigator from './navigator/MainNavigator';
 import {NavigationContainer} from '@react-navigation/native';
-import AuthContext from './store/auth-context';
 import AuthNavigator from './navigator/AuthNavigator';
 import SplashScreen from 'react-native-splash-screen';
-import * as Keychain from 'react-native-keychain';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {autoSignin} from './store/reducers/authReducer';
+import colors from './constants/colors';
 const Main = () => {
   const isLoggedIn = useSelector(state => state.isLoggedIn);
+  const dispatch = useDispatch();
   useEffect(() => {
     const func = async () => {
-      // const data = await Keychain.getGenericPassword();
-      // console.log(data);
-      // if (data) {
-      //   authCtx.setLogin(true);
-      // }
+      await dispatch(autoSignin());
       SplashScreen.hide();
     };
     func();
-  }, []);
+  }, [dispatch]);
+
+  // return (
+  //   <ImageBackground
+  //     style={{width: '100%', height: '100%'}}
+  //     source={require('./assets/images/splash.png')}>
+  //     <View style={{justifyContent: 'flex-end', paddingBottom: 30, flex: 1}}>
+  //       <StatusBar
+  //         backgroundColor={colors.secondary}
+  //         barStyle="light-content"
+  //       />
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   </ImageBackground>
+  // );
 
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <NavigationContainer>
-        {!isLoggedIn ? <AuthNavigator /> : <MainNavigator />}
+        {isLoggedIn ? <MainNavigator /> : <AuthNavigator />}
       </NavigationContainer>
     </>
   );
