@@ -15,7 +15,7 @@ import CountryPicker from 'react-native-country-picker-modal';
 import FormField from '../components/FormField';
 import RegisterHeader from '../components/RegisterHeader';
 import colors from '../constants/colors';
-import {signin} from '../store/reducers/authReducer';
+import {login} from '../store/reducers/authReducer';
 
 const SigninScreen = ({navigation}) => {
   const goToRegister = () => {
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
 
 const initialState = {
   country: {
-    callingCode: ['91'],
+    callingCode: ['1'],
     countryCode: 'US',
   },
   phone: {
@@ -213,7 +213,7 @@ const Form = () => {
 
   const submitHandler = async () => {
     reduxDispatch(
-      signin({
+      login({
         phone: +state.phone.value,
         password: state.password.value,
         callingCode: state.country.callingCode,
