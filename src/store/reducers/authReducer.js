@@ -12,6 +12,10 @@ const authReducer = createSlice({
   initialState,
   reducers: {
     login() {},
+    register() {},
+    signout(state, action) {
+      state.isLoggedIn = false;
+    },
     setLogin(state, action) {
       state.isLoggedIn = true;
       if (action.payload) {
@@ -19,7 +23,6 @@ const authReducer = createSlice({
       }
     },
     setLoading(state, action) {
-      console.log(action);
       state.isLoading = action.payload;
     },
     setError(state, action) {
@@ -28,5 +31,6 @@ const authReducer = createSlice({
   },
 });
 
-export const {setLogin, setError, setLoading, login} = authReducer.actions;
+export const {setLogin, setError, setLoading, login, register, signout} =
+  authReducer.actions;
 export default authReducer.reducer;

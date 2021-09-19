@@ -1,14 +1,21 @@
 /* eslint-disable react-native/no-inline-styles */
-import React, {useContext, useReducer} from 'react';
-import {View, StyleSheet, Text, KeyboardAvoidingView} from 'react-native';
+import React, {useReducer} from 'react';
+import {
+  View,
+  StyleSheet,
+  Text,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+} from 'react-native';
 import {Button} from 'react-native-elements';
 import {ScrollView} from 'react-native-gesture-handler';
+import {useDispatch, useSelector} from 'react-redux';
+import CountryPicker from 'react-native-country-picker-modal';
 
 import RegisterHeader from '../components/RegisterHeader';
 import FormField from '../components/FormField';
 import colors from '../constants/colors';
-import AuthContext from '../store/auth-context';
-import {validateEmail} from '../helpers/helpers';
+import {register} from '../store/reducers/authReducer';
 
 const RegistrationScreen = ({navigation}) => {
   const goToLogin = () => {
@@ -86,60 +93,100 @@ const styles = StyleSheet.create({
 });
 
 const initialState = {
-  email: {isTouched: false, isValid: false, error: 'Email is required'},
-  fullName: {isTouched: false, isValid: false, error: 'Full Name is required'},
-  password: {isTouched: false, isValid: false, error: 'Password is Requried'},
+  country: {
+    callingCode: ['91'],
+    countryCode: 'IN',
+  },
+  phone: {
+    isTouched: false,
+    isValid: true,
+    error: 'Phone No. is required',
+    value: '9836222684',
+  },
+  fullName: {
+    isTouched: false,
+    isValid: false,
+    error: 'Full Name is required',
+    value: '',
+  },
+  password: {
+    isTouched: false,
+    isValid: true,
+    error: 'Password is Requried',
+    value: '123456',
+  },
 };
 
 const reducer = (state, action) => {
+  console.log(action);
   switch (action.type) {
-    case 'email':
+    case 'phone':
       return {
-        email: {
-          ...state.email,
+        phone: {
+          ...state.phone,
           isValid: action.payload.isValid,
           error: action.payload.error,
+          value: action.payload.value,
         },
+        fullName: state.fullName,
         password: state.password,
-        fullName: state.fullName,
-      };
-    case 'password':
-      return {
-        email: state.email,
-        password: {
-          ...state.password,
-          isValid: action.payload.isValid,
-          error: action.payload.error,
-        },
-        fullName: state.fullName,
+        country: state.country,
       };
     case 'fullName':
       return {
-        email: state.email,
-        password: state.password,
+        phone: state.phone,
         fullName: {
           ...state.fullName,
           isValid: action.payload.isValid,
           error: action.payload.error,
+          value: action.payload.value,
+        },
+        password: state.password,
+        country: state.country,
+      };
+    case 'password':
+      return {
+        phone: state.phone,
+        fullName: state.fullName,
+        password: {
+          ...state.password,
+          isValid: action.payload.isValid,
+          error: action.payload.error,
+          value: action.payload.value,
+        },
+        country: state.country,
+      };
+    case 'country':
+      return {
+        phone: state.phone,
+        fullName: state.fullName,
+        password: state.password,
+        country: {
+          countryCode: action.payload.cca2,
+          callingCode: action.payload.callingCode,
         },
       };
-    case 'emailBlur':
+    case 'phoneBlur':
       return {
-        email: {...state.email, isTouched: true},
-        password: {...state.password},
-        fullName: {...state.fullName},
+        phone: {...state.phone, isTouched: true},
+        fullName: state.fullName,
+        password: state.password,
+        country: state.country,
       };
     case 'passwordBlur':
       return {
-        email: {...state.email},
+        phone: state.phone,
+        fullName: state.fullName,
         password: {...state.password, isTouched: true},
-        fullName: {...state.fullName},
+        country: state.country,
       };
     case 'fullNameBlur':
+      console.log({...state.fullName});
       return {
-        email: {...state.email},
-        password: {...state.password},
+        phone: state.phone,
         fullName: {...state.fullName, isTouched: true},
+        password: state.password,
+        country: state.country,
       };
     default:
       break;
@@ -148,32 +195,20 @@ const reducer = (state, action) => {
 
 const Form = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  console.log(state);
 
-  const emailChangeHandler = value => {
+  const phoneChangeHandler = value => {
     let isValid = true;
     let error = '';
     if (value.length === 0) {
       isValid = false;
-      error = 'Email is required';
+      error = 'phone is required';
     }
-    if (!validateEmail(value)) {
+    if (value.length < 10) {
       isValid = false;
-      error = 'Email is not valid';
+      error = 'phone is not valid';
     }
-    dispatch({type: 'email', payload: {value, isValid, error}});
-  };
-  const fullNameChangeHandler = value => {
-    let isValid = true;
-    let error = '';
-    if (value.length === 0) {
-      isValid = false;
-      error = 'Full Name is required';
-    }
-    if (value.length < 2) {
-      isValid = false;
-      error = 'Full Name should be atleaset 2 characters';
-    }
-    dispatch({type: 'fullName', payload: {value, isValid, error}});
+    dispatch({type: 'phone', payload: {value, isValid, error}});
   };
   const passwordChangeHandler = value => {
     let isValid = true;
@@ -188,12 +223,28 @@ const Form = () => {
     }
     dispatch({type: 'password', payload: {value, isValid, error}});
   };
+  const fullNameChangeHandler = value => {
+    console.log('fullNameChangeHandler');
+    let isValid = true;
+    let error = '';
+    if (value.length === 0) {
+      isValid = false;
+      error = 'Full name is required';
+    }
+    if (value.length < 5) {
+      isValid = false;
+      error = 'Full Name should be atleaset 5 characters';
+    }
+    console.log('before dispatch fullname');
 
-  const emailBlurHandler = value => {
-    if (state.email.isTouched) {
+    dispatch({type: 'fullName', payload: {value, isValid, error}});
+  };
+
+  const phoneBlurHandler = value => {
+    if (state.phone.isTouched) {
       return;
     }
-    dispatch({type: 'emailBlur'});
+    dispatch({type: 'phoneBlur'});
   };
   const passwordBlurHandler = value => {
     if (state.password.isTouched) {
@@ -209,31 +260,50 @@ const Form = () => {
   };
 
   const isValid =
-    state.email.isValid && state.fullName.isValid && state.password.isValid;
+    state.phone.isValid && state.password.isValid && state.fullName.isValid;
 
-  const authCtx = useContext(AuthContext);
+  const reduxDispatch = useDispatch();
+  const reduxState = useSelector(rxState => rxState);
+
+  const submitHandler = async () => {
+    reduxDispatch(
+      register({
+        phone: +state.phone.value,
+        fullName: state.fullName.value,
+        password: state.password.value,
+        callingCode: state.country.callingCode,
+      }),
+    );
+  };
 
   return (
     <>
       <FormField
-        placeholder="Full Name"
+        placeholder="phone"
+        label="Phone"
+        returnKeyType="next"
+        leftIcon={
+          <CountryPicker
+            withFilter
+            withAlphaFilter
+            countryCode={state.country.countryCode}
+            onSelect={country => dispatch({type: 'country', payload: country})}
+          />
+        }
+        onChangeText={phoneChangeHandler}
+        onBlur={phoneBlurHandler}
+        value={state.phone.value}
+        keyboardType="numeric"
+        errorMessage={state.phone.isTouched ? state.phone.error : ''}
+      />
+      <FormField
+        placeholder="Full name"
         label="Full Name"
         returnKeyType="next"
-        leftIcon={{type: 'ionicon', name: 'ios-person'}}
         onChangeText={fullNameChangeHandler}
         onBlur={fullNameBlurHandler}
         value={state.fullName.value}
         errorMessage={state.fullName.isTouched ? state.fullName.error : ''}
-      />
-      <FormField
-        placeholder="Email"
-        label="Email"
-        returnKeyType="next"
-        leftIcon={{type: 'ionicon', name: 'mail'}}
-        onChangeText={emailChangeHandler}
-        onBlur={emailBlurHandler}
-        value={state.email.value}
-        errorMessage={state.email.isTouched ? state.email.error : ''}
       />
       <FormField
         placeholder="Password"
@@ -253,13 +323,23 @@ const Form = () => {
           onPress={() => {}}
         />
       </View>
-      <Button
-        containerStyle={styles.buttonContainer}
-        title="Register"
-        buttonStyle={styles.buttonStyle}
-        onPress={authCtx.register}
-        disabled={!isValid}
-      />
+      {reduxState.error.length > 0 && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorStyle}>{reduxState.error}</Text>
+        </View>
+      )}
+
+      {reduxState.isLoading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <Button
+          containerStyle={styles.buttonContainer}
+          title="Register"
+          buttonStyle={styles.buttonStyle}
+          onPress={submitHandler}
+          disabled={!isValid}
+        />
+      )}
     </>
   );
 };

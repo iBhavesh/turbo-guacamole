@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
 
 const initialState = {
   country: {
-    callingCode: ['1'],
-    countryCode: 'US',
+    callingCode: ['91'],
+    countryCode: 'IN',
   },
   phone: {
     isTouched: false,
