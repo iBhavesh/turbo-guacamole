@@ -8,7 +8,7 @@ import {
   setLoading,
   setLogin,
   signout,
-} from '../reducers/authReducer';
+} from '../reducers/authSlice';
 
 const url = 'https://qaazii.com/dev/public/api/sign-in';
 

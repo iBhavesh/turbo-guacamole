@@ -6,6 +6,12 @@ import DashboardGridItem from '../components/DashboardGridItem';
 import AppHeaderButton from '../components/AppHeaderButtons';
 import {SearchBar, Text} from 'react-native-elements';
 import colors from '../constants/colors';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 
 const items = [
   {id: 1, name: 'Food'},
@@ -29,6 +35,13 @@ const DashboardScreen = ({navigation}) => {
   const [listItems, setListItems] = useState(items);
   const [searchData, setSearchData] = useState('');
 
+  const searchOpacity = useSharedValue(0);
+  const animatedStyles = useAnimatedStyle(() => {
+    return {
+      opacity: searchOpacity.value,
+    };
+  });
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -38,6 +51,10 @@ const DashboardScreen = ({navigation}) => {
             onPress={() => {
               navigation.setOptions({
                 headerShown: false,
+              });
+              searchOpacity.value = withTiming(1, {
+                duration: 700,
+                easing: Easing.inOut(Easing.exp),
               });
               setshowSearchBar(true);
             }}
@@ -51,7 +68,7 @@ const DashboardScreen = ({navigation}) => {
         </HeaderButtons>
       ),
     });
-  }, [navigation]);
+  }, [navigation, searchOpacity]);
 
   const renderitem = ({item}) => {
     return (
@@ -64,34 +81,50 @@ const DashboardScreen = ({navigation}) => {
     );
   };
 
+  const hideSearchbar = async () => {
+    setshowSearchBar(false);
+    navigation.setOptions({
+      headerShown: true,
+    });
+  };
+
   return (
     <>
       {showSearchBar && (
-        <SearchBar
-          autoFocus
-          onClear={() => {
-            setshowSearchBar(false);
-            navigation.setOptions({
-              headerShown: true,
-            });
-          }}
-          containerStyle={{backgroundColor: colors.primary}}
-          inputContainerStyle={{backgroundColor: colors.white}}
-          onChangeText={value => {
-            setSearchData(value);
-            const newItems = items.filter(item => item.name.includes(value));
-            setListItems(newItems);
-          }}
-          value={searchData}
-          onEndEditing={() => {
-            if (!searchData) {
-              setshowSearchBar(false);
-              navigation.setOptions({
-                headerShown: true,
+        <Animated.View style={animatedStyles}>
+          <SearchBar
+            autoFocus
+            onClear={() => {
+              searchOpacity.value = withTiming(0, {
+                duration: 1000,
+                easing: Easing.inOut(Easing.exp),
               });
-            }
-          }}
-        />
+              setTimeout(() => {
+                hideSearchbar();
+              }, 300);
+            }}
+            containerStyle={{backgroundColor: colors.primary}}
+            inputContainerStyle={{backgroundColor: colors.white}}
+            onChangeText={value => {
+              setSearchData(value);
+              const re = new RegExp(value, 'i');
+              const newItems = items.filter(item => item.name.match(re));
+              setListItems(newItems);
+            }}
+            value={searchData}
+            onEndEditing={() => {
+              if (!searchData) {
+                searchOpacity.value = withTiming(0, {
+                  duration: 1000,
+                  easing: Easing.inOut(Easing.exp),
+                });
+                setTimeout(() => {
+                  hideSearchbar();
+                }, 300);
+              }
+            }}
+          />
+        </Animated.View>
       )}
       {listItems.length === 0 ? (
         <Text h2> No items found </Text>

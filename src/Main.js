@@ -7,11 +7,11 @@ import AuthNavigator from './navigator/AuthNavigator';
 import SplashScreen from 'react-native-splash-screen';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {setLogin} from './store/reducers/authReducer';
+import {setLogin} from './store/reducers/authSlice';
 const Main = () => {
   const [isLoading, setIsLoading] = useState(true);
 
-  const isLoggedIn = useSelector(state => state.isLoggedIn);
+  const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const dispatch = useDispatch();
 
   useEffect(() => {

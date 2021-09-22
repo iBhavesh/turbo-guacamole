@@ -15,7 +15,7 @@ import CountryPicker from 'react-native-country-picker-modal';
 import FormField from '../components/FormField';
 import RegisterHeader from '../components/RegisterHeader';
 import colors from '../constants/colors';
-import {login} from '../store/reducers/authReducer';
+import {login} from '../store/reducers/authSlice';
 
 const SigninScreen = ({navigation}) => {
   const goToRegister = () => {
@@ -209,7 +209,7 @@ const Form = () => {
   const isValid = state.phone.isValid && state.password.isValid;
 
   const reduxDispatch = useDispatch();
-  const reduxState = useSelector(rxState => rxState);
+  const reduxState = useSelector(rxState => rxState.auth);
 
   const submitHandler = async () => {
     reduxDispatch(

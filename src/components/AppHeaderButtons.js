@@ -8,10 +8,10 @@ import colors from '../constants/colors';
 const AppHeaderButton = props => {
   return (
     <HeaderButton
-      {...props}
       IconComponent={Icon}
       iconSize={20}
       color={isIOS ? colors.primary : 'white'}
+      {...props}
     />
   );
 };

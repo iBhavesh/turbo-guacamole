@@ -5,20 +5,20 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 
-import AccountScreen from '../screens/AccountScreen';
+import UsersScreen from '../screens/UsersScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import colors from '../constants/colors';
 import {isIOS} from 'react-native-elements/dist/helpers';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
-import {signout} from '../store/reducers/authReducer';
+import {signout} from '../store/reducers/authSlice';
 
 const Drawer = createDrawerNavigator();
 
 const CustomDrawerContent = props => {
   const dispatch = useDispatch();
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.auth.user);
 
   const handleSignout = () => {
     dispatch(signout());
@@ -61,12 +61,14 @@ const CustomDrawerContent = props => {
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
-      drawerContent={props => <CustomDrawerContent {...props} />}>
+      drawerContent={props => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerTintColor: !isIOS ? colors.white : colors.primary,
+        headerStyle: !isIOS ? {backgroundColor: colors.primary} : {},
+      }}>
       <Drawer.Screen
         options={{
           title: 'Dashboard',
-          headerTintColor: !isIOS ? colors.white : colors.primary,
-          headerStyle: !isIOS ? {backgroundColor: colors.primary} : {},
           drawerIcon: ({color}) => (
             <Icon color={color} type="ionicon" name="ios-grid" />
           ),
@@ -80,8 +82,8 @@ const DrawerNavigator = () => {
             <Icon color={color} type="ionicon" name="ios-person" />
           ),
         }}
-        name="Account"
-        component={AccountScreen}
+        name="Users"
+        component={UsersScreen}
       />
     </Drawer.Navigator>
   );
