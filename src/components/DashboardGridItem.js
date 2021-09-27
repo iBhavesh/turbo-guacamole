@@ -4,10 +4,10 @@ import {View, StyleSheet, Pressable, Text} from 'react-native';
 const DashboardGridItem = ({onPress, title}) => {
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
   return (
-    <View style={[styles.gridItem, {backgroundColor: '#' + randomColor}]}>
+    <View style={styles.gridItem}>
       <Pressable
         android_ripple={{color: '#918a8a'}}
-        style={styles.touchableStyle}
+        style={[styles.touchableStyle, {backgroundColor: '#' + randomColor}]}
         onPress={onPress}>
         <View style={styles.gridView}>
           <Text style={styles.title} numberOfLines={2}>
@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 150,
     margin: 15,
+    backgroundColor: 'white',
     borderRadius: 10,
-    backgroundColor: '#ffffff',
     overflow: 'hidden',
     elevation: 5,
   },

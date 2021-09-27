@@ -92,7 +92,6 @@ const DrawerNavigator = () => {
 const styles = StyleSheet.create({
   buttonContainer: {
     padding: 10,
-    borderWidth: 1,
   },
   drawerContentContainer: {
     flex: 1,

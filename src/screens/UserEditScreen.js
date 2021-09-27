@@ -1,5 +1,5 @@
 import React, {useReducer} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Button} from 'react-native-elements';
 import {useDispatch} from 'react-redux';
 import FormField from '../components/FormField';
