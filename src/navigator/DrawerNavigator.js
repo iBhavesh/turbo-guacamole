@@ -13,6 +13,7 @@ import {Image, StyleSheet, Text, View} from 'react-native';
 import {Button, Icon} from 'react-native-elements';
 import {useDispatch, useSelector} from 'react-redux';
 import {signout} from '../store/reducers/authSlice';
+import FileViewerScreen from '../screens/FileViewerScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -84,6 +85,15 @@ const DrawerNavigator = () => {
         }}
         name="Users"
         component={UsersScreen}
+      />
+      <Drawer.Screen
+        options={{
+          drawerIcon: ({color}) => (
+            <Icon color={color} type="material-community" name="file" />
+          ),
+        }}
+        name="Files"
+        component={FileViewerScreen}
       />
     </Drawer.Navigator>
   );

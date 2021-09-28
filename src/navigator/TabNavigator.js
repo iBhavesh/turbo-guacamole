@@ -5,9 +5,9 @@ import MainNavigator from './MainNavigator';
 import {isIOS} from 'react-native-elements/dist/helpers';
 import colors from '../constants/colors';
 import {Icon} from 'react-native-elements';
-import FavouritesScreen from '../screens/FavouritesScreen';
 import MenuScreen from '../screens/MenuScreen';
 import UsersNavigator from './UsersNavigator';
+import FileViewerScreen from '../screens/FileViewerScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -47,12 +47,12 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="FavouritesTab"
-        component={FavouritesScreen}
+        name="FilesTab"
+        component={FileViewerScreen}
         options={{
-          title: 'Favourites',
+          title: 'File',
           tabBarIcon: props => (
-            <Icon name="ios-heart" type="ionicon" color={props.color} />
+            <Icon name="file" type="material-community" color={props.color} />
           ),
         }}
       />
