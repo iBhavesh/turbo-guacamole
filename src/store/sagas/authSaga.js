@@ -45,6 +45,7 @@ function* registerUser(action) {
 
 function* signoutUser(action) {
   AsyncStorage.removeItem('user');
+  AsyncStorage.removeItem('userList');
   put(signout());
 }
 

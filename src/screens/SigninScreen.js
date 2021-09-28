@@ -103,13 +103,13 @@ const initialState = {
     isTouched: false,
     isValid: true,
     error: 'Phone No. is required',
-    value: '9836222684',
+    value: __DEV__ ? '9836222684' : '',
   },
   password: {
     isTouched: false,
     isValid: true,
     error: 'Password is Requried',
-    value: '123456',
+    value: __DEV__ ? '123456' : '',
   },
 };
 
