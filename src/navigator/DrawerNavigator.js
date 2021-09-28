@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
   },
   drawerContentContainer: {
     flex: 1,
+    paddingTop: 0,
     justifyContent: 'space-between',
   },
   headerContainer: {

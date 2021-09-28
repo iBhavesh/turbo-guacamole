@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {setLogin} from './store/reducers/authSlice';
 import TabNavigator from './navigator/TabNavigator';
 import colors from './constants/colors';
+import {setUsers} from './store/reducers/userSlice';
 const Main = () => {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,6 +26,10 @@ const Main = () => {
     setIsLoading(true);
     const func = async () => {
       const data = await AsyncStorage.getItem('user');
+      const users = await AsyncStorage.getItem('userList');
+      if (users) {
+        dispatch(setUsers(JSON.parse(users)));
+      }
       if (data) {
         dispatch(setLogin(JSON.parse(data)));
       } else {

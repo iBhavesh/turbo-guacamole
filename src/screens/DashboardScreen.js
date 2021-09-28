@@ -96,7 +96,7 @@ const DashboardScreen = ({navigation}) => {
             autoFocus
             onClear={() => {
               searchOpacity.value = withTiming(0, {
-                duration: 1000,
+                duration: 500,
                 easing: Easing.inOut(Easing.exp),
               });
               setTimeout(() => {

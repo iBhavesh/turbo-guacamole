@@ -12,7 +12,7 @@ const UsersScreen = ({navigation}) => {
   const users = useSelector(state => state.user.users);
 
   useEffect(() => {
-    AsyncStorage.setItem('users', JSON.stringify(users));
+    AsyncStorage.setItem('userList', JSON.stringify(users));
   }, [users]);
 
   useLayoutEffect(() => {
