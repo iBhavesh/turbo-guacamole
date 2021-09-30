@@ -1,5 +1,5 @@
-import React, {useLayoutEffect, useState} from 'react';
-import {FlatList} from 'react-native';
+import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import {BackHandler, FlatList} from 'react-native';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 
 import DashboardGridItem from '../components/DashboardGridItem';
@@ -12,6 +12,8 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
+import {useFocusEffect} from '@react-navigation/native';
+import Snackbar from 'react-native-snackbar';
 
 const items = [
   {id: 1, name: 'Food'},
@@ -34,6 +36,8 @@ const DashboardScreen = ({navigation}) => {
   const [showSearchBar, setshowSearchBar] = useState(false);
   const [listItems, setListItems] = useState(items);
   const [searchData, setSearchData] = useState('');
+  // const [tryGoBack, setTryGoBack] = useState(false);
+  const tryGoBack = useRef(false);
 
   const searchOpacity = useSharedValue(0);
   const animatedStyles = useAnimatedStyle(() => {
@@ -41,6 +45,32 @@ const DashboardScreen = ({navigation}) => {
       opacity: searchOpacity.value,
     };
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (tryGoBack.current) {
+            BackHandler.exitApp();
+          } else {
+            Snackbar.show({
+              text: 'Press back again to exit',
+            });
+            setTimeout(() => {
+              tryGoBack.current = false;
+            }, 5000);
+            tryGoBack.current = true;
+            return true;
+          }
+        },
+      );
+
+      return () => {
+        unsubscribe.remove();
+      };
+    }, [tryGoBack]),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -101,7 +101,7 @@ const initialState = {
     isTouched: false,
     isValid: true,
     error: 'Phone No. is required',
-    value: '9836222684',
+    value: '',
   },
   fullName: {
     isTouched: false,
@@ -113,12 +113,11 @@ const initialState = {
     isTouched: false,
     isValid: true,
     error: 'Password is Requried',
-    value: '123456',
+    value: '',
   },
 };
 
 const reducer = (state, action) => {
-  console.log(action);
   switch (action.type) {
     case 'phone':
       return {
@@ -181,7 +180,6 @@ const reducer = (state, action) => {
         country: state.country,
       };
     case 'fullNameBlur':
-      console.log({...state.fullName});
       return {
         phone: state.phone,
         fullName: {...state.fullName, isTouched: true},
@@ -195,7 +193,6 @@ const reducer = (state, action) => {
 
 const Form = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
-  console.log(state);
 
   const phoneChangeHandler = value => {
     let isValid = true;
@@ -224,7 +221,6 @@ const Form = () => {
     dispatch({type: 'password', payload: {value, isValid, error}});
   };
   const fullNameChangeHandler = value => {
-    console.log('fullNameChangeHandler');
     let isValid = true;
     let error = '';
     if (value.length === 0) {
@@ -235,7 +231,6 @@ const Form = () => {
       isValid = false;
       error = 'Full Name should be atleaset 5 characters';
     }
-    console.log('before dispatch fullname');
 
     dispatch({type: 'fullName', payload: {value, isValid, error}});
   };

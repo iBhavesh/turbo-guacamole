@@ -5,9 +5,9 @@ import MainNavigator from './MainNavigator';
 import {isIOS} from 'react-native-elements/dist/helpers';
 import colors from '../constants/colors';
 import {Icon} from 'react-native-elements';
-import MenuScreen from '../screens/MenuScreen';
+import ImageGalleryScreen from '../screens/ImageGalleryScreen';
 import UsersNavigator from './UsersNavigator';
-import FileViewerScreen from '../screens/FileViewerScreen';
+import FileTabNavigator from './FIleTabNavigator';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,12 +44,14 @@ const TabNavigator = () => {
           tabBarIcon: props => (
             <Icon name="ios-person" type="ionicon" color={props.color} />
           ),
+          tabBarHideOnKeyboard: true,
         }}
       />
       <Tab.Screen
         name="FilesTab"
-        component={FileViewerScreen}
+        component={FileTabNavigator}
         options={{
+          headerShown: false,
           title: 'File',
           tabBarIcon: props => (
             <Icon name="file" type="material-community" color={props.color} />
@@ -57,11 +59,11 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Menu"
-        component={MenuScreen}
+        name="Gallery"
+        component={ImageGalleryScreen}
         options={{
           tabBarIcon: props => (
-            <Icon name="ios-menu" type="ionicon" color={props.color} />
+            <Icon name="ios-image-outline" type="ionicon" color={props.color} />
           ),
         }}
       />
