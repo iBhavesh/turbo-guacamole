@@ -1,11 +1,18 @@
 import React, {useLayoutEffect, useState} from 'react';
-import {View, StyleSheet, Dimensions, Alert} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Alert,
+  PermissionsAndroid,
+} from 'react-native';
 import {Button} from 'react-native-elements';
 import DocumentPicker from 'react-native-document-picker';
 import Pdf from 'react-native-pdf';
 import {HeaderButtons, Item} from 'react-navigation-header-buttons';
 
 import AppHeaderButton from '../components/AppHeaderButtons';
+import RNFetchBlob from 'rn-fetch-blob';
 
 const FileViewerScreen = ({navigation}) => {
   const [file, setFile] = useState(undefined);
@@ -47,6 +54,26 @@ const FileViewerScreen = ({navigation}) => {
     }
   };
 
+  const handleDownloadedFile = () => {
+    PermissionsAndroid.requestMultiple([
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    ]);
+
+    const dirs = RNFetchBlob.fs.dirs;
+    RNFetchBlob.config({
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        path: dirs.DownloadDir,
+        title: 'dummy_pdf.pdf',
+        notification: true,
+      },
+    })
+      .fetch('GET', 'http://www.africau.edu/images/default/sample.pdf')
+      .then(res => {
+        console.log('The file saved to ', res.path());
+      });
+  };
+
   if (file) {
     return <Pdf style={styles.pdfContainer} source={{uri: file}} />;
   }
@@ -59,7 +86,17 @@ const FileViewerScreen = ({navigation}) => {
         onPress={handleOpenTextEditor}
         containerStyle={styles.buttonStyle}
       />
-      <Button type="solid" title="Open File" onPress={handlePickFile} />
+      <Button
+        type="solid"
+        title="Open File"
+        onPress={handlePickFile}
+        containerStyle={styles.buttonStyle}
+      />
+      <Button
+        type="solid"
+        title="Download File"
+        onPress={handleDownloadedFile}
+      />
     </View>
   );
 };

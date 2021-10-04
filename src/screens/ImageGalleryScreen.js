@@ -4,6 +4,7 @@ import {Icon} from 'react-native-elements';
 import ImageCropPicker from 'react-native-image-crop-picker';
 
 import ImageGridItem from '../components/ImageGridItem';
+import VideoGridItem from '../components/VideoGridItem';
 
 const ImageGalleryScreen = () => {
   const [images, setImages] = useState({});
@@ -11,7 +12,6 @@ const ImageGalleryScreen = () => {
     try {
       const response = await ImageCropPicker.openPicker({
         multiple: true,
-        mediaType: 'photo',
       });
       if (!response) {
         return;
@@ -38,9 +38,16 @@ const ImageGalleryScreen = () => {
   let imageGrid = [];
   for (const key in images) {
     if (Object.hasOwnProperty.call(images, key)) {
-      imageGrid.push(
-        <ImageGridItem key={key} imagePath={key} onDelete={onDelete} />,
-      );
+      if (images[key].mime.startsWith('image')) {
+        imageGrid.push(
+          <ImageGridItem key={key} imagePath={key} onDelete={onDelete} />,
+        );
+      }
+      if (images[key].mime.startsWith('video')) {
+        imageGrid.push(
+          <VideoGridItem key={key} videoPath={key} onDelete={onDelete} />,
+        );
+      }
     }
   }
 
@@ -77,5 +84,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  backgroundVideo: {
+    width: 300,
+    height: 200,
   },
 });
