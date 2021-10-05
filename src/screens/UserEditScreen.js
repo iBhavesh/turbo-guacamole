@@ -1,8 +1,9 @@
-import React, {useReducer} from 'react';
+import React, {useReducer, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Button} from 'react-native-elements';
 import {useDispatch} from 'react-redux';
 import FormField from '../components/FormField';
+import Modal from '../components/Modal';
 import colors from '../constants/colors';
 import {addUser} from '../store/reducers/userSlice';
 
@@ -13,16 +14,22 @@ const initialState = {
     error: 'Name is required',
     value: '',
   },
-  age: {
+  phone: {
     isTouched: false,
     isValid: false,
-    error: 'Age is Requried',
+    error: 'Phone is Requried',
     value: '',
   },
   profession: {
     isTouched: false,
     isValid: false,
     error: 'Profession is Requried',
+    value: '',
+  },
+  address: {
+    isTouched: false,
+    isValid: false,
+    error: 'Address is Requried',
     value: '',
   },
 };
@@ -38,7 +45,8 @@ const reducer = (state, action) => {
           value: action.payload.value,
         },
         profession: state.profession,
-        age: state.age,
+        phone: state.phone,
+        address: state.address,
       };
     case 'profession':
       return {
@@ -49,14 +57,28 @@ const reducer = (state, action) => {
           error: action.payload.error,
           value: action.payload.value,
         },
-        age: state.age,
+        phone: state.phone,
+        address: state.address,
       };
-    case 'age':
+    case 'phone':
       return {
         name: state.name,
         profession: state.profession,
-        age: {
-          ...state.age,
+        phone: {
+          ...state.phone,
+          isValid: action.payload.isValid,
+          error: action.payload.error,
+          value: action.payload.value,
+        },
+        address: state.address,
+      };
+    case 'address':
+      return {
+        name: state.name,
+        profession: state.profession,
+        phone: state.phone,
+        address: {
+          ...state.address,
           isValid: action.payload.isValid,
           error: action.payload.error,
           value: action.payload.value,
@@ -66,19 +88,29 @@ const reducer = (state, action) => {
       return {
         name: {...state.name, isTouched: true},
         profession: {...state.profession},
-        age: {...state.age},
+        phone: {...state.phone},
+        address: {...state.address},
       };
     case 'professionBlur':
       return {
         name: {...state.name},
         profession: {...state.profession, isTouched: true},
-        age: {...state.age},
+        phone: {...state.phone},
+        address: {...state.address},
       };
-    case 'ageBlur':
+    case 'phoneBlur':
       return {
         name: {...state.name},
         profession: {...state.profession},
-        age: {...state.age, isTouched: true},
+        phone: {...state.phone, isTouched: true},
+        address: {...state.address},
+      };
+    case 'addressBlur':
+      return {
+        name: {...state.name},
+        profession: {...state.profession},
+        phone: {...state.phone},
+        address: {...state.address, isTouched: true},
       };
     default:
       break;
@@ -88,6 +120,7 @@ const reducer = (state, action) => {
 const UserEditScreen = ({navigation}) => {
   const [formState, formDispatch] = useReducer(reducer, initialState);
   const dispatch = useDispatch();
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const nameChangeHandler = value => {
     let isValid = true;
@@ -104,6 +137,7 @@ const UserEditScreen = ({navigation}) => {
     }
     formDispatch({type: 'nameBlur'});
   };
+
   const professionChangeHandler = value => {
     let isValid = true;
     let error = '';
@@ -119,47 +153,74 @@ const UserEditScreen = ({navigation}) => {
     }
     formDispatch({type: 'professionBlur'});
   };
-  const ageChangeHandler = value => {
+
+  const addressChangeHandler = value => {
     let isValid = true;
     let error = '';
     if (value.length === 0) {
       isValid = false;
-      error = 'Age is required';
-    } else if (+value <= 0 || +value > 150) {
-      isValid = false;
-      error = 'Age is not valid';
+      error = 'Address is required';
     }
-    formDispatch({type: 'age', payload: {value, isValid, error}});
+    formDispatch({type: 'address', payload: {value, isValid, error}});
   };
-  const ageBlurHandler = value => {
-    if (formState.age.isTouched) {
+  const addressBlurHandler = value => {
+    if (formState.address.isTouched) {
       return;
     }
-    formDispatch({type: 'ageBlur'});
+    formDispatch({type: 'addressBlur'});
+  };
+
+  const phoneChangeHandler = value => {
+    let isValid = true;
+    let error = '';
+    if (value.length === 0) {
+      isValid = false;
+      error = 'Phone is required';
+    } else if (value.length < 10 || value.length > 15) {
+      isValid = false;
+      error = 'Phone is not valid';
+    }
+    formDispatch({type: 'phone', payload: {value, isValid, error}});
+  };
+  const phoneBlurHandler = value => {
+    if (formState.phone.isTouched) {
+      return;
+    }
+    formDispatch({type: 'phoneBlur'});
   };
 
   const submitHandler = () => {
     const user = {
+      id: Date.now(),
       name: formState.name.value,
-      age: formState.age.value,
       profession: formState.profession.value,
+      phone: formState.phone.value,
+      address: formState.address.value,
     };
     dispatch(addUser(user));
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
     navigation.goBack();
   };
 
   const isValid =
     formState.name.isValid &&
-    formState.age.isValid &&
-    formState.profession.isValid;
+    formState.address.isValid &&
+    formState.profession.isValid &&
+    formState.phone.isValid;
 
   return (
     <View>
+      <Modal visible={isModalVisible} onClose={onModalClose} />
       <FormField
-        placeholder="Name"
-        label="Name"
+        placeholder="Full Name"
+        label="Full Name"
         onChangeText={nameChangeHandler}
         onBlur={nameBlurHandler}
+        errorMessage={formState.name.isTouched ? formState.name.error : ''}
       />
       <FormField
         placeholder="Profession"
@@ -171,12 +232,20 @@ const UserEditScreen = ({navigation}) => {
         }
       />
       <FormField
-        placeholder="Age"
-        label="Age"
-        onChangeText={ageChangeHandler}
-        onBlur={ageBlurHandler}
-        keyboardType="numeric"
-        errorMessage={formState.age.isTouched ? formState.age.error : ''}
+        placeholder="Phone"
+        label="Phone"
+        onChangeText={phoneChangeHandler}
+        onBlur={phoneBlurHandler}
+        errorMessage={formState.phone.isTouched ? formState.phone.error : ''}
+      />
+      <FormField
+        placeholder="Address"
+        label="Address"
+        onChangeText={addressChangeHandler}
+        onBlur={addressBlurHandler}
+        errorMessage={
+          formState.address.isTouched ? formState.address.error : ''
+        }
       />
       <Button
         containerStyle={styles.buttonContainer}

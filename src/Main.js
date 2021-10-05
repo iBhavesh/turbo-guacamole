@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {StatusBar} from 'react-native';
+import {Image, StatusBar, StyleSheet} from 'react-native';
 
 import {NavigationContainer} from '@react-navigation/native';
 import AuthNavigator from './navigator/AuthNavigator';
@@ -12,9 +12,28 @@ import colors from './constants/colors';
 import {setUsers} from './store/reducers/userSlice';
 const Main = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [splashScreen, setSplashScreen] = useState(
+    require('./assets/images/splash.png'),
+  );
+  const [statusBarColor, setStatusBarColor] = useState(colors.secondary);
 
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    SplashScreen.hide();
+    setTimeout(() => {
+      setSplashScreen(require('./assets/images/splash3.png'));
+      setStatusBarColor(colors.secondaryDark);
+    }, 3000);
+    setTimeout(() => {
+      setSplashScreen(require('./assets/images/splash2.png'));
+      setStatusBarColor(colors.primary);
+    }, 6000);
+    setTimeout(() => {
+      setSplashScreen('');
+    }, 9000);
+  }, []);
 
   useEffect(() => {
     if (isLoading && isLoggedIn) {
@@ -45,6 +64,15 @@ const Main = () => {
     }
   }, [isLoading]);
 
+  if (splashScreen) {
+    return (
+      <>
+        <StatusBar backgroundColor={statusBarColor} barStyle="light-content" />
+        <Image style={styles.splashImageStyle} source={splashScreen} />
+      </>
+    );
+  }
+
   return (
     <>
       <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
@@ -56,3 +84,10 @@ const Main = () => {
 };
 
 export default Main;
+
+const styles = StyleSheet.create({
+  splashImageStyle: {
+    height: '100%',
+    width: '100%',
+  },
+});
