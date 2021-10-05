@@ -54,24 +54,56 @@ const FileViewerScreen = ({navigation}) => {
     }
   };
 
-  const handleDownloadedFile = () => {
-    PermissionsAndroid.requestMultiple([
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    ]);
+  const downloadFile = () => {
+    let date = new Date();
+    // File URL which we want to download
+    let FILE_URL =
+      'https://hwpi.harvard.edu/files/torman/files/sample.pdf?m=1594914296';
+    let file_ext = '.pdf';
 
-    const dirs = RNFetchBlob.fs.dirs;
-    RNFetchBlob.config({
+    const {config, fs} = RNFetchBlob;
+    let RootDir = fs.dirs.DownloadDir;
+    let options = {
+      fileCache: true,
       addAndroidDownloads: {
-        useDownloadManager: true,
-        path: dirs.DownloadDir,
-        title: 'dummy_pdf.pdf',
+        path:
+          RootDir +
+          '/file_' +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          file_ext,
+        description: 'downloading file...',
         notification: true,
+        useDownloadManager: true,
       },
-    })
-      .fetch('GET', 'http://www.africau.edu/images/default/sample.pdf')
+    };
+    config(options)
+      .fetch('GET', FILE_URL)
       .then(res => {
-        console.log('The file saved to ', res.path());
+        Alert.alert('Success', 'File Downloaded');
+        console.log('res -> ', JSON.stringify(res));
+      })
+      .catch(e => {
+        console.log(e);
       });
+  };
+
+  const handleDownloadFile = async () => {
+    try {
+      const permission = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      );
+      if (permission === PermissionsAndroid.RESULTS.GRANTED) {
+        downloadFile();
+      } else {
+        Alert.alert(
+          'Permission Denied',
+          'You need to give write permission to download file',
+        );
+        return;
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   if (file) {
@@ -92,11 +124,7 @@ const FileViewerScreen = ({navigation}) => {
         onPress={handlePickFile}
         containerStyle={styles.buttonStyle}
       />
-      <Button
-        type="solid"
-        title="Download File"
-        onPress={handleDownloadedFile}
-      />
+      <Button type="solid" title="Download File" onPress={handleDownloadFile} />
     </View>
   );
 };

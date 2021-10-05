@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Alert, Pressable, StyleSheet, View} from 'react-native';
-import {Icon} from 'react-native-elements';
+import {Button, Icon} from 'react-native-elements';
 import ImageCropPicker from 'react-native-image-crop-picker';
 
 import ImageGridItem from '../components/ImageGridItem';
@@ -29,11 +29,60 @@ const ImageGalleryScreen = () => {
     }
   };
 
+  const getChoice = () => {
+    Alert.alert('Choose', 'Select which one you would like to do', [
+      {
+        text: 'Image',
+        onPress: () => handlePickFromCamera('image'),
+      },
+      {
+        text: 'Video',
+        onPress: () => handlePickFromCamera('video'),
+      },
+    ]);
+  };
+
+  const handlePickFromCamera = async choice => {
+    try {
+      let options = {
+        height: 400,
+        width: 300,
+        mediaType: 'image',
+      };
+      if (choice === 'video') {
+        options = {mediaType: 'video'};
+      }
+      const response = await ImageCropPicker.openCamera(options);
+      const newImages = {};
+      newImages[response.path] = response;
+      setImages(prev => ({...prev, ...newImages}));
+    } catch (e) {
+      if (e.message === 'User cancelled image selection') {
+        return;
+      }
+      Alert.alert('Error', 'Something went wrong');
+    }
+  };
+
   const onDelete = path => {
     const newImages = {...images};
     delete newImages[path];
     setImages(newImages);
   };
+
+  if (Object.keys(images).length === 0) {
+    return (
+      <View style={styles.buttonContainer}>
+        <Button
+          containerStyle={styles.buttonStyle}
+          type="solid"
+          title="Pick from gallery"
+          onPress={handleImagePicker}
+        />
+        <Button type="solid" title="Use Camera" onPress={getChoice} />
+      </View>
+    );
+  }
 
   let imageGrid = [];
   for (const key in images) {
@@ -54,11 +103,11 @@ const ImageGalleryScreen = () => {
   return (
     <View style={styles.container}>
       {imageGrid}
-      <View style={styles.imageView}>
-        <Pressable style={styles.pressable} onPress={handleImagePicker}>
+      {/* <View style={styles.imageView}> */}
+      {/* <Pressable style={styles.pressable} onPress={handleImagePicker}>
           <Icon type="ionicon" name="ios-add" size={70} />
-        </Pressable>
-      </View>
+        </Pressable> */}
+      {/* </View> */}
     </View>
   );
 };
@@ -88,5 +137,13 @@ const styles = StyleSheet.create({
   backgroundVideo: {
     width: 300,
     height: 200,
+  },
+  buttonStyle: {
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flex: 1,
+    paddingTop: 10,
+    alignItems: 'center',
   },
 });
